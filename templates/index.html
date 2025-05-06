@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Transcriber</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css">
+    <style>
+        body {
+            margin: 40px;
+        }
+        #transcriptOutput {
+            white-space: pre-wrap;
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 200px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>YouTube Transcript Extractor</h2>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL" style="width: 80%;">
+    <button onclick="getTranscript()">Get Transcript</button>
+
+    <div id="transcriptOutput">Transcript will appear here...</div>
+
+    <script>
+        async function getTranscript() {
+            const url = document.getElementById('videoUrl').value;
+            const output = document.getElementById('transcriptOutput');
+            output.textContent = "Loading...";
+            try {
+                const response = await fetch('/transcribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+                if (data.transcript) {
+                    output.textContent = data.transcript;
+                } else {
+                    output.textContent = "Error: " + data.error;
+                }
+            } catch (error) {
+                output.textContent = "An error occurred: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
